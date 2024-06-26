@@ -62,7 +62,7 @@ class HBNBCommand(cmd.Cmd):
         Args:
             line (str): input line
         """
-        return line.split()
+        return line.split(" ")
 
     def do_create(self, line):
         """
@@ -72,16 +72,34 @@ class HBNBCommand(cmd.Cmd):
             line (str): input line containing the class name.
         """
         commands = self.parse_arguments(line)
+        length_command = len(commands)
 
-        if len(commands) == 0:
-            print("** class name missing **")
-        elif commands[0] not in self.vl_classes:
+        if not line:
+                print("** class name missing **")
+                return
+        elif not (commands[0] in HBNBCommand.vl_classes):
             print("** class doesn't exist **")
-        else:
-            new_instance = self.vl_classes[commands[0]]()
-            storage.new(new_instance)
-            storage.save()
-            print(new_instance.id)
+            return
+        
+        new_instance = HBNBCommand.vl_classes[commands[0]]()
+        if length_command > 1:
+            commands = commands[1:]
+            for argument in commands:
+                params = argument.split("=")
+                if len(params) == 2:
+                    k = params[0]
+                    v = params[1]
+                    if v[0] == '"' and v[-1] == '"':
+                        v = v[1:-1].replace("_", " ")
+                    else:
+                        try:
+                            v = int(v)
+                        except ValueError:
+                            v = float(v)
+                            setattr(new_instance, k, v)
+        new_instance.save()
+        print(new_instance.id)
+        
 
     def do_show(self, line):
         """
