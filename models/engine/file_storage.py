@@ -34,9 +34,59 @@ class FileStorage:
         "State": State
     }
 
-    def all(self):
-        """ Returning the dictionary __objects"""
-        return self.__objects
+    def all(self, cls=None):
+        """Returns the list of objects of one type of class.
+        Args:
+            cls: Class
+        Return:
+            returns the list of objects of one type of class.
+        """
+        """
+        _dic = {}
+        if cls is None:
+            return (self.__objects)
+        else:
+            for key, value in self.__objects.items():
+                if isinstance(value, cls):
+                    _dic[key] = value
+            return _dic
+        """
+    
+        """Returns the list of objects of a specific class type.
+        Args:
+            cls: The class type to filter by (optional).
+        
+        Returns:
+            A dictionary of objects of the specified class type,
+            or all objects if no class type is specified.
+        """
+    
+        if cls is None:
+            return self.__objects
+        return {key: value for key, value in self.__objects.items() if isinstance(value, cls)}
+        
+    
+    def delete(self, obj=None):
+        """delete obj from __objects if it’s inside
+        Args:
+            obj: Object
+        """
+        """
+        if obj:
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            if key in self.__objects:
+                del self.__objects[key]
+            self.save()
+        """
+        """Delete obj from __objects if it exists.
+    
+        Args:
+            obj: The object to delete.
+        """
+        if obj:
+            key = f"{type(obj).__name__}.{obj.id}"
+            self.__objects.pop(key, None)
+            self.save()
 
     def new(self, obj):
         """ Sets in __objects obj with key id"""
