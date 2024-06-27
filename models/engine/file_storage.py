@@ -111,3 +111,6 @@ class FileStorage:
                         self.new(cls(**obj_data))
         except FileNotFoundError:
             pass
+    def close(self):
+        """call method for deserializing"""
+        self.reload()
