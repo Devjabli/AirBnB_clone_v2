@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 """Engine DBStorage Module"""
 
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy import create_engine
 from os import getenv
 from models.base_model import BaseModel, Base
 from models.city import City
@@ -11,6 +9,9 @@ from models.user import User
 from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy import create_engine
+
 
 class DBStorage:
     """New Engine for database storage

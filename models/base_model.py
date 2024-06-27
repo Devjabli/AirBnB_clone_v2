@@ -7,9 +7,13 @@ from sqlalchemy import Column, DateTime, String
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import models
+from os import getenv
 
+if getenv("HBNB_TYPE_STORAGE") == 'db':
+    Base = declarative_base()
+else:
+    Base = object
 
-Base = declarative_base()
 
 class BaseModel:
     """ Representing the BaseModel of the console project. """
