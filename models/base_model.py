@@ -28,23 +28,24 @@ class BaseModel:
             **kwargs (dict): key and value of attributes.
         """
 
-        if not kwargs:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.today()
-            self.updated_at = datetime.today()
-            models.storage.new(self)
+        if kwargs:
+            for k, v in kwargs.items():
+                if k != "__class__":
+                    setattr(self, k, v)
+            if 'id' not in kwargs:
+                self.id = str(uuid.uuid4())
+            if 'created_at' in kwargs:
+                kwargs['created_at'] = datetime.strptime(kwargs['created_at'], '%Y-%m-%dT%H:%M:%S.%f')
+            if 'updated_at' in kwargs:
+                kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'], '%Y-%m-%dT%H:%M:%S.%f')
         else:
-            for key, value in kwargs.items():
-                if key in "created_at" or key in "updated_at":
-                    self.__dict__[key] = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                else:
-                    self.__dict__[key] = value
+            self.id = str(uuid.uuid4())
+            self.created_at = self.updated_at = datetime.now()
 
     def save(self):
         """
         Updating the attribute updated_at with current time 
         """
-        self.updated_at = datetime.now()
         models.storage.new(self)
         models.storage.save()
 
