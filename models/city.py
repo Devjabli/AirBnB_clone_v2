@@ -2,17 +2,24 @@
 """
 Module City class.
 """
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy.orm import relationship, backref
 
 
-class City(BaseModel):
-    """
-    Representing city.
-
+class City(BaseModel, Base):
+    """ City class,  state ID and name
     Attributes:
-        state_id (str): The state id.
-        name (str): name city.
+        name: input name
+        state id: input id
     """
 
-    state_id = ""
-    name = ""
+    __tablename__ = "cities"
+
+    name = Column(String(128),
+                  nullable=False)
+    state_id = Column(String(60),
+                      ForeignKey('states.id'))
+    places = relationship("Place",
+                          backref=backref("cities", cascade='all'),
+                          cascade="all")

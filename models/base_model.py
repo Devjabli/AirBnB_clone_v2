@@ -3,11 +3,20 @@
 """ Representing the BaseModel class. """
 
 import uuid
+from sqlalchemy import Column, DateTime, String
+from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import models
 
+
+Base = declarative_base()
+
 class BaseModel:
     """ Representing the BaseModel of the console project. """
+
+    id = Column(String(60), primary_key=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.now(), nullable=False)
+    updated_at = Column(DateTime, default=datetime.now(), nullable=False)
 
     def __init__(self, *args, **kwargs):
 
@@ -36,20 +45,24 @@ class BaseModel:
         Updating the attribute updated_at with current time 
         """
         self.updated_at = datetime.now()
+        models.storage.new(self)
         models.storage.save()
 
     def to_dict(self):
-        """
-        The dictionary of BaseModel return as instance
-        """
-        tdict = self.__dict__.copy()
-        dt_attr = ["created_at", "updated_at"]
-        for attrb in dt_attr:
-            if attrb in tdict:
-                tdict[attrb] = tdict[attrb].isoformat()
-        tdict["__class__"] = self.__class__.__name__
-        return tdict
+        """Convert instance into dict format"""
+        dictionary = self.__dict__.copy()
+        dictionary['__class__'] = type(self).__name__
+        dictionary['created_at'] = self.created_at.isoformat()
+        dictionary['updated_at'] = self.updated_at.isoformat()
 
+        dictionary.pop('_sa_instance_state', None)
+
+        return dictionary
+    
+    def delete(self):
+        """ Deleting local instance from storage """
+        models.storage.delete(self)
+        
     def __str__(self):
         """
         Return the string representation of the BaseModel instance.
