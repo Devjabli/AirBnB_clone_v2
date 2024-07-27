@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" Create a script to launch a Flask web application 
+""" Create a script to launch a Flask web application
 that listens on IP address 0.0.0.0 and port 5000.
 """
 
