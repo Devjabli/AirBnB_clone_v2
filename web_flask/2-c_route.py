@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-""" Write a script that starts a Flask web application:
-Your web application must be listening on 0.0.0.0, port 5000
+""" Create a script to launch a Flask web application 
+that listens on IP address 0.0.0.0 and port 5000.
 """
 
 from flask import Flask
