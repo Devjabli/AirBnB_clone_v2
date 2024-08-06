@@ -93,7 +93,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return False
         if args[0] in self.vl_classes:
-            new_dict = self.k_v_parser(args[1:])
+            new_dict = self.key_v_parser(args[1:])
             instance = self.vl_classes[args[0]](**new_dict)
         else:
             print("** class doesn't exist **")
