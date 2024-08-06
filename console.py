@@ -12,6 +12,7 @@ from models.city import City
 from models.place import Place
 from models.review import Review
 from models.state import State
+import shlex
 
 class HBNBCommand(cmd.Cmd):
     """
@@ -64,41 +65,41 @@ class HBNBCommand(cmd.Cmd):
         """
         return line.split(" ")
 
-    def do_create(self, line):
-        """
-        Create a new instance of BaseModel and save it to the JSON file.
-        
-        Args:
-            line (str): input line containing the class name.
-        """
-        commands = self.parse_arguments(line)
-        length_command = len(commands)
-
-        if not line:
-                print("** class name missing **")
-                return
-        elif not (commands[0] in HBNBCommand.vl_classes):
-            print("** class doesn't exist **")
-            return
-        
-        new_instance = HBNBCommand.vl_classes[commands[0]]()
-        if length_command > 1:
-            commands = commands[1:]
-            for argument in commands:
-                params = argument.split("=")
-                if len(params) == 2:
-                    k = params[0]
-                    v = params[1]
-                    if v[0] == '"' and v[-1] == '"':
-                        v = v[1:-1].replace("_", " ")
-                    else:
+    def _key_value_parser(self, args):
+        """creates a dictionary from a list of strings"""
+        new_dict = {}
+        for arg in args:
+            if "=" in arg:
+                kvp = arg.split('=', 1)
+                key = kvp[0]
+                value = kvp[1]
+                if value[0] == value[-1] == '"':
+                    value = shlex.split(value)[0].replace('_', ' ')
+                else:
+                    try:
+                        value = int(value)
+                    except:
                         try:
-                            v = int(v)
-                        except ValueError:
-                            v = float(v)
-                            setattr(new_instance, k, v)
-        new_instance.save()
-        print(new_instance.id)
+                            value = float(value)
+                        except:
+                            continue
+                new_dict[key] = value
+        return new_dict
+
+    def do_create(self, arg):
+        """Creates a new instance of a class"""
+        args = arg.split()
+        if len(args) == 0:
+            print("** class name missing **")
+            return False
+        if args[0] in self.vl_classes:
+            new_dict = self._key_value_parser(args[1:])
+            instance = self.vl_classes[args[0]](**new_dict)
+        else:
+            print("** class doesn't exist **")
+            return False
+        print(instance.id)
+        instance.save()
         
 
     def do_show(self, line):

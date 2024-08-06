@@ -2,6 +2,7 @@
 """
 Module City class.
 """
+import models
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship, backref
@@ -13,13 +14,18 @@ class City(BaseModel, Base):
         name: input name
         state id: input id
     """
-
-    __tablename__ = "cities"
-
-    name = Column(String(128),
-                  nullable=False)
-    state_id = Column(String(60),
-                      ForeignKey('states.id'))
-    places = relationship("Place",
-                          backref=backref("cities", cascade='all'),
-                          cascade="all")
+    if models.type_storage == 'db':
+        __tablename__ = "cities"
+        name = Column(String(128),
+                    nullable=False)
+        state_id = Column(String(60),
+                        ForeignKey('states.id'))
+        places = relationship("Place",
+                            backref=backref("cities", cascade='all'),
+                            cascade="all")
+    else:
+        state_id = ""
+        name = ""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

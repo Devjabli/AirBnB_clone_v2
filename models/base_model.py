@@ -2,14 +2,14 @@
 
 """ Representing the BaseModel class. """
 
-import uuid
-from sqlalchemy import Column, DateTime, String
-from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import models
-from os import getenv
+from sqlalchemy.ext.declarative import declarative_base
+import uuid
+from sqlalchemy import Column, DateTime, String
 
-if getenv("HBNB_TYPE_STORAGE") == 'db':
+
+if models.type_storage == 'db':
     Base = declarative_base()
 else:
     Base = object
@@ -17,10 +17,10 @@ else:
 
 class BaseModel:
     """ Representing the BaseModel of the console project. """
-
-    id = Column(String(60), primary_key=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.now(), nullable=False)
-    updated_at = Column(DateTime, default=datetime.now(), nullable=False)
+    if models.type_storage == 'db':
+        id = Column(String(60), primary_key=True, nullable=False)
+        created_at = Column(DateTime, default=datetime.now(), nullable=False)
+        updated_at = Column(DateTime, default=datetime.now(), nullable=False)
 
     def __init__(self, *args, **kwargs):
 
@@ -39,9 +39,9 @@ class BaseModel:
             if 'id' not in kwargs:
                 self.id = str(uuid.uuid4())
             if 'created_at' in kwargs:
-                kwargs['created_at'] = datetime.strptime(kwargs['created_at'], '%Y-%m-%dT%H:%M:%S.%f')
+                self.created_at = datetime.strptime(kwargs['created_at'], '%Y-%m-%dT%H:%M:%S.%f')
             if 'updated_at' in kwargs:
-                kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'], '%Y-%m-%dT%H:%M:%S.%f')
+                self.updated_at = datetime.strptime(kwargs['updated_at'], '%Y-%m-%dT%H:%M:%S.%f')
         else:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
@@ -50,18 +50,20 @@ class BaseModel:
         """
         Updating the attribute updated_at with current time 
         """
+        self.updated_at = datetime.utcnow()
         models.storage.new(self)
         models.storage.save()
 
     def to_dict(self):
         """Convert instance into dict format"""
         dictionary = self.__dict__.copy()
-        dictionary['__class__'] = type(self).__name__
-        dictionary['created_at'] = self.created_at.isoformat()
-        dictionary['updated_at'] = self.updated_at.isoformat()
-
-        dictionary.pop('_sa_instance_state', None)
-
+        
+        list_key = ["created_at", "updated_at"]
+        for k in list_key:
+            if k in dictionary:
+                dictionary[k] = dictionary[k].strftime('%Y-%m-%dT%H:%M:%S.%f')
+        dictionary["__class__"] = self.__class__.__name__
+        
         return dictionary
     
     def delete(self):
