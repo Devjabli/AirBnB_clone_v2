@@ -26,7 +26,7 @@ class DBStorage:
     def __init__(self):
         """Initializing the storage engine."""
         self.__engine = create_engine(
-            'mysql+mysqldb://{}:{}@{}:3306/{}'.format(
+            'mysql+mysqldb://{}:{}@{}/{}'.format(
                 getenv("HBNB_MYSQL_USER"),
                 getenv("HBNB_MYSQL_PWD"),
                 getenv("HBNB_MYSQL_HOST"),
